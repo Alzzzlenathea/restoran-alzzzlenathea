@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Alzzzlenathea Resto</title>
+  <!-- Tambahkan library JsBarcode untuk generate barcode -->
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                  url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: white;
+      min-height: 100vh;
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background: rgba(26, 26, 46, 0.9);
+      color: white;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      box-sizing: border-box;
+      position: fixed;
+      top: 0;
+      left: 0;
+      backdrop-filter: blur(10px);
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 100;
+    }
+    
+    .sidebar h2 {
+      text-align: center;
+      margin: 0 0 12px;
+      font-size: 18px;
+      color: #e94560;
+    }
+    
+    .sidebar .top-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    
+    .sidebar button {
+      padding: 10px;
+      background: rgba(22, 33, 62, 0.8);
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: 0.2s;
+      text-align: left;
+      width: 100%;
+      backdrop-filter: blur(5px);
+    }
+    
+    .sidebar button.menu-btn {
+      background: #1abc9c;
+      color: white;
+      font-weight: 600;
+    }
+    
+    .sidebar button:hover {
+      background: #e94560;
+    }
+
+    /* Content (middle) */
+    .content {
+      flex: 1;
+      padding: 20px;
+      box-sizing: border-box;
+      margin-left: 240px;
+      color: white;
+      min-height: 100vh;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 12px;
+    }
+    
+    .card {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      text-align: center;
+      color: #333;
+      backdrop-filter: blur(5px);
+      transition: transform 0.3s;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .card img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    
+    .card h3 {
+      margin: 10px 0 6px;
+    }
+    
+    .card p {
+      color: #444;
+      margin-bottom: 8px;
+    }
+    
+    .card button {
+      background: #1a1a2e;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    
+    .card button:hover {
+      background: #e94560;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+    }
+    
+    .modal-content {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      border-radius: 12px;
+      width: 420px;
+      max-height: 80vh;
+      overflow-y: auto;
+      color: #333;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      animation: modalFadeIn 0.3s ease-out;
+    }
+    
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .modal-content h2 { 
+      margin-top: 0; 
+      color: #1a1a2e;
+      text-align: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    
+    .close {
+      float: right;
+      cursor: pointer;
+      color: red;
+      font-size: 18px;
+      background: none;
+      border: none;
+    }
+    
+    select, input {
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      box-sizing: border-box;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 14px;
+    }
+    
+    .pay-btn {
+      background: linear-gradient(45deg, #1abc9c, #16a085);
+      color: white;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    
+    .pay-btn:hover {
+      background: linear-gradient(45deg, #16a085, #1abc9c);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(26, 188, 156, 0.3);
+    }
+    
+    .small-info { 
+      font-size: 10px; 
+      color: gray; 
+      margin-top: 5px; 
+      text-align: center; 
+    }
+    
+    .qty-btn { 
+      padding: 4px 8px; 
+      margin: 0 4px; 
+      border: none; 
+      border-radius: 4px; 
+      cursor: pointer; 
+      font-size: 13px; 
+      background: #16213e; 
+      color: white; 
+    }
+    
+    .qty-btn:hover { 
+      background: #e94560; 
+    }
+    
+    .cart-item-row { 
+      display:flex; 
+      justify-content:space-between; 
+      align-items:center; 
+      gap:10px; 
+      margin:8px 0; 
+      padding: 12px;
+      background: rgba(0,0,0,0.05);
+      border-radius: 8px;
+    }
+    
+    .cart-item-name { 
+      flex:1; 
+      text-align:left; 
+    }
+
+    /* Login modal width */
+    #loginModal .modal-content { 
+      width: 320px; 
+    }
+
+    .welcome-message {
+      background: linear-gradient(90deg,#1abc9c,#16a085);
+      color: white;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      text-align: center;
+      font-weight: 700;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    
+    /* Kasir Button Style */
+    .kasir-btn {
+      background: linear-gradient(45deg, #f39c12, #e67e22) !important;
+      font-weight: bold;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    }
+    
+    .kasir-btn:hover {
+      background: linear-gradient(45deg, #e67e22, #d35400) !important;
+    }
+    
+    /* Login Screen Background */
+    .login-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), 
+                  url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    
+    .login-container {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 30px;
+      border-radius: 15px;
+      width: 350px;
+      text-align: center;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+      color: #333;
+    }
+    
+    .login-container h2 {
+      margin-top: 0;
+      color: #1a1a2e;
+      margin-bottom: 20px;
+    }
+    
+    .login-container input {
+      margin-bottom: 15px;
+    }
+    
+    .login-container button {
+      background: #1abc9c;
+      color: white;
+      border: none;
+      padding: 10px;
+      width: 100%;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    
+    .login-container button:hover {
+      background: #16a085;
+    }
+    
+    /* Payment Methods */
+    .payment-methods {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin: 15px 0;
+    }
+    
+    .payment-method {
+      background: #f8f9fa;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .payment-method:hover {
+      border-color: #1abc9c;
+      background: #e8f8f5;
+    }
+    
+    .payment-method.selected {
+      border-color: #1abc9c;
+      background: #e8f8f5;
+      color: #1abc9c;
+      font-weight: bold;
+    }
+    
+    .payment-method i {
+      font-size: 24px;
+      margin-bottom: 5px;
+      display: block;
+    }
+    
+    /* Success Animation */
+    .success-animation {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .success-animation .checkmark {
+      width: 80px;
+      height: 80px;
+      background: #1abc9c;
+      border-radius: 50%;
+      display: inline-block;
+      position: relative;
+      margin-bottom: 15px;
+    }
+    
+    .success-animation .checkmark:after {
+      content: "";
+      position: absolute;
+      display: block;
+      width: 20px;
+      height: 40px;
+      border: solid white;
+      border-width: 0 3px 3px 0;
+      transform: rotate(45deg);
+      left: 28px;
+      top: 15px;
+    }
+    
+    .empty-cart {
+      text-align: center;
+      padding: 30px;
+      color: #666;
+    }
+    
+    .empty-cart img {
+      width: 100px;
+      opacity: 0.5;
+      margin-bottom: 15px;
+    }
+    
+    .cart-summary {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+    }
+    
+    .cart-summary h3 {
+      margin-top: 0;
+      color: #1a1a2e;
+    }
+    
+    .cart-summary .total-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 0;
+      font-size: 18px;
+      font-weight: bold;
+      color: #e94560;
+    }
+    
+    .cart-summary .subtotal-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 5px 0;
+      font-size: 14px;
+    }
+    
+    .cart-summary .tax-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 5px 0;
+      font-size: 14px;
+      color: #e94560;
+    }
+    
+    /* Notification */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      color: #333;
+      padding: 16px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      transform: translateX(120%);
+      transition: transform 0.3s ease-out;
+      max-width: 300px;
+    }
+    
+    .notification.show {
+      transform: translateX(0);
+    }
+    
+    .notification-icon {
+      width: 24px;
+      height: 24px;
+      background: #1abc9c;
+      border-radius: 50%;
+      margin-right: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+    
+    .notification-content {
+      flex: 1;
+    }
+    
+    .notification-title {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    
+    .notification-message {
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .notification-close {
+      margin-left: 12px;
+      background: none;
+      border: none;
+      color: #999;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    
+    /* Main Content Sections */
+    .content-section {
+      display: none;
+      animation: fadeIn 0.3s ease-in;
+    }
+    
+    .content-section.active {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .section-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .section-icon {
+      font-size: 24px;
+      margin-right: 10px;
+    }
+    
+    .history-item {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      color: #333;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .history-item-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    
+    .history-buyer {
+      font-weight: bold;
+      color: #1a1a2e;
+    }
+    
+    .history-total {
+      color: #e94560;
+      font-weight: bold;
+    }
+    
+    .history-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 10px;
+    }
+    
+    .history-item-tag {
+      background: #f1f2f6;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    
+    .payment-history-item {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      color: #333;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .payment-history-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    
+    .payment-method-badge {
+      background: #1abc9c;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    
+    .address-card {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      padding: 20px;
+      color: #333;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      max-width: 500px;
+    }
+    
+    .address-card h3 {
+      margin-top: 0;
+      color: #1a1a2e;
+    }
+    
+    .address-card p {
+      margin: 10px 0;
+    }
+    
+    .address-card .icon {
+      margin-right: 8px;
+    }
+    
+    /* Cashier Section */
+    .cashier-container {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 20px;
+      color: #333;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .cashier-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .cashier-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    .cashier-left, .cashier-right {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+    }
+    
+    .cashier-total {
+      font-size: 24px;
+      font-weight: bold;
+      color: #e94560;
+      text-align: center;
+      margin: 15px 0;
+    }
+    
+    .cashier-success {
+      display: none;
+      text-align: center;
+      padding: 30px;
+    }
+    
+    .cashier-success .checkmark {
+      width: 100px;
+      height: 100px;
+      background: #1abc9c;
+      border-radius: 50%;
+      display: inline-block;
+      position: relative;
+      margin-bottom: 20px;
+    }
+    
+    .cashier-success .checkmark:after {
+      content: "";
+      position: absolute;
+      display: block;
+      width: 25px;
+      height: 50px;
+      border: solid white;
+      border-width: 0 3px 3px 0;
+      transform: rotate(45deg);
+      left: 35px;
+      top: 20px;
+    }
+    
+    .cashier-success h3 {
+      color: #1a1a2e;
+      margin-bottom: 10px;
+    }
+    
+    .cashier-success button {
+      margin-top: 15px;
+    }
+    
+    /* Receipt Modal */
+    #receiptModal .modal-content {
+      width: 380px;
+      font-family: 'Courier New', monospace;
+      padding: 20px;
+      background: white;
+      color: black;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    
+    .receipt-header {
+      text-align: center;
+      border-bottom: 1px dashed #333;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .receipt-header h2 {
+      margin: 0;
+      font-size: 20px;
+      color: #1a1a2e;
+    }
+    
+    .receipt-header p {
+      margin: 5px 0;
+      font-size: 12px;
+    }
+    
+    .receipt-details {
+      margin-bottom: 15px;
+    }
+    
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 5px 0;
+      font-size: 14px;
+    }
+    
+    .receipt-items {
+      border-top: 1px dashed #333;
+      border-bottom: 1px dashed #333;
+      padding: 10px 0;
+      margin: 10px 0;
+    }
+    
+    .receipt-item {
+      display: flex;
+      justify-content: space-between;
+      margin: 5px 0;
+      font-size: 13px;
+    }
+    
+    .receipt-total {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      font-size: 16px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #333;
+    }
+    
+    .receipt-barcode {
+      text-align: center;
+      margin: 20px 0;
+    }
+    
+    .receipt-barcode canvas {
+      width: 100%;
+      max-width: 280px;
+      height: 80px;
+    }
+    
+    .receipt-footer {
+      text-align: center;
+      font-size: 12px;
+      margin-top: 15px;
+      color: #555;
+    }
+    
+    .receipt-tax {
+      display: flex;
+      justify-content: space-between;
+      margin: 5px 0;
+      font-size: 14px;
+      color: #e94560;
+    }
+    
+    .receipt-subtotal {
+      display: flex;
+      justify-content: space-between;
+      margin: 5px 0;
+      font-size: 14px;
+    }
+    
+    .print-btn {
+      background: #1abc9c;
+      color: white;
+      border: none;
+      padding: 10px;
+      width: 100%;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    
+    .print-btn:hover {
+      background: #16a085;
+    }
+  </style>
+</head>
+<body>
+  <!-- Login Screen -->
+  <div id="loginScreen" class="login-screen">
+    <div class="login-container">
+      <h2>Alzzzlenathea Resto</h2>
+      <h3>Login</h3>
+      <input type="text" id="username" placeholder="Username">
+      <input type="password" id="password" placeholder="Password">
+      <button onclick="login()">Login</button>
+      <p class="small-info">Username: alibaba | Password: 123</p>
+      <p class="small-info">Username: pembeli | Password: 123</p>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <h2>Alzzzlenathea Resto</h2>
+
+    <div class="top-buttons">
+      <button class="menu-btn" onclick="showSection('menu')">🍽️ Menu</button>
+      <button class="kasir-btn" onclick="showSection('cashier')">💰 Kasir</button>
+      <button onclick="showSection('cart')">🛒 Keranjang</button>
+      <button onclick="showSection('history')">📜 History Pembeli</button>
+      <button onclick="showSection('payment')">💳 History Pembayaran</button>
+      <button onclick="showSection('address')">📍 Alamat Resto</button>
+    </div>
+
+    <div style="height:8px;"></div>
+  </div>
+
+  <div class="content">
+    <div id="welcome"></div>
+    
+    <!-- Menu Section -->
+    <div id="menu-section" class="content-section active">
+      <div class="section-header">
+        <span class="section-icon">🍽️</span>
+        <h1>Daftar Menu</h1>
+      </div>
+      <div id="menu-detail">
+        <p>Klik tombol <b>🍽️ Menu</b> di sidebar untuk melihat seluruh makanan & minuman.</p>
+      </div>
+    </div>
+    
+    <!-- Cashier Section -->
+    <div id="cashier-section" class="content-section">
+      <div class="section-header">
+        <span class="section-icon">💰</span>
+        <h1>Kasir Alzzzlenathea Resto</h1>
+      </div>
+      
+      <div class="cashier-container">
+        <div class="cashier-header">
+          <h2>Pembayaran Pesanan</h2>
+        </div>
+        
+        <div id="cashier-empty" class="empty-cart" style="display: none;">
+          <img src="https://cdn-icons-png.flaticon.com/512/1170/1170678.png" alt="Empty Cart">
+          <p>Keranjang Anda kosong</p>
+          <p>Silakan tambahkan menu terlebih dahulu</p>
+          <button class="pay-btn" onclick="showSection('menu')">Lihat Menu</button>
+        </div>
+        
+        <div id="cashier-main">
+          <div class="cashier-content">
+            <div class="cashier-left">
+              <h3>Ringkasan Pesanan</h3>
+              <div id="cashier-items"></div>
+              <div class="cashier-total">
+                Total: <span id="cashier-total-amount">Rp 0</span>
+              </div>
+            </div>
+            
+            <div class="cashier-right">
+              <h3>Pilih Metode Pembayaran</h3>
+              <div class="payment-methods">
+                <div class="payment-method" data-method="Tunai">
+                  <div>💵</div>
+                  <div>Tunai</div>
+                </div>
+                <div class="payment-method" data-method="Dana">
+                  <div>📱</div>
+                  <div>Dana</div>
+                </div>
+                <div class="payment-method" data-method="OVO">
+                  <div>📱</div>
+                  <div>OVO</div>
+                </div>
+                <div class="payment-method" data-method="Gopay">
+                  <div>📱</div>
+                  <div>Gopay</div>
+                </div>
+                <div class="payment-method" data-method="Bank Transfer">
+                  <div>🏦</div>
+                  <div>Bank Transfer</div>
+                </div>
+                <div class="payment-method" data-method="QRIS">
+                  <div>📲</div>
+                  <div>QRIS</div>
+                </div>
+              </div>
+              
+              <input type="hidden" id="cashier-payment-method" value="">
+              
+              <button class="pay-btn" onclick="processCashierPayment()">Proses Pembayaran</button>
+            </div>
+          </div>
+        </div>
+        
+        <div id="cashier-success" class="cashier-success">
+          <div class="checkmark"></div>
+          <h3>Pembayaran Berhasil!</h3>
+          <p>Terima kasih atas pembayaran Anda</p>
+          <button class="pay-btn" onclick="showSection('menu')">Kembali ke Menu</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Cart Section -->
+    <div id="cart-section" class="content-section">
+      <div class="section-header">
+        <span class="section-icon">🛒</span>
+        <h1>Keranjang</h1>
+      </div>
+      <div id="cart-content">
+        <p>Keranjang Anda kosong. Silakan tambahkan menu dari halaman Menu.</p>
+      </div>
+    </div>
+    
+    <!-- History Section -->
+    <div id="history-section" class="content-section">
+      <div class="section-header">
+        <span class="section-icon">📜</span>
+        <h1>History Pembeli</h1>
+      </div>
+      <div id="history-content">
+        <p>Belum ada history pembeli.</p>
+      </div>
+    </div>
+    
+    <!-- Payment History Section -->
+    <div id="payment-section" class="content-section">
+      <div class="section-header">
+        <span class="section-icon">💳</span>
+        <h1>History Pembayaran</h1>
+      </div>
+      <div id="payment-content">
+        <p>Belum ada history pembayaran.</p>
+      </div>
+    </div>
+    
+    <!-- Address Section -->
+    <div id="address-section" class="content-section">
+      <div class="section-header">
+        <span class="section-icon">📍</span>
+        <h1>Alamat Resto</h1>
+      </div>
+      <div id="address-content">
+        <div class="address-card">
+          <h3>Informasi Restoran</h3>
+          <p><span class="icon">📍</span> Jl. Kuliner No. 11, Bogor, Indonesia</p>
+          <p><span class="icon">📞</span> 0812-3456-7891</p>
+          <p><span class="icon">⏰</span> Buka: 10:00 - 22:00 WIB</p>
+          <p><span class="icon">📅</span> Setiap Hari</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification -->
+  <div id="notification" class="notification">
+    <div class="notification-icon">✓</div>
+    <div class="notification-content">
+      <div class="notification-title">Berhasil</div>
+      <div class="notification-message">Pesanan telah ditambahkan</div>
+    </div>
+    <button class="notification-close" onclick="hideNotification()">✕</button>
+  </div>
+
+  <!-- Receipt Modal -->
+  <div id="receiptModal" class="modal">
+    <div class="modal-content">
+      <div class="receipt-header">
+        <h2>Alzzzlenathea Resto</h2>
+        <p>Jl. Kuliner No. 11, Bogor, Indonesia</p>
+        <p>Telp: 0812-3456-7891</p>
+        <p>================================</p>
+      </div>
+      
+      <div class="receipt-details">
+        <div class="receipt-row">
+          <span>No. Order:</span>
+          <span id="receipt-order-id">#000000</span>
+        </div>
+        <div class="receipt-row">
+          <span>Tanggal:</span>
+          <span id="receipt-date"></span>
+        </div>
+        <div class="receipt-row">
+          <span>Kasir:</span>
+          <span id="receipt-cashier">-</span>
+        </div>
+        <div class="receipt-row">
+          <span>Metode:</span>
+          <span id="receipt-method">-</span>
+        </div>
+      </div>
+      
+      <div class="receipt-items">
+        <div id="receipt-items-list"></div>
+      </div>
+      
+      <div class="receipt-subtotal">
+        <span>Subtotal:</span>
+        <span id="receipt-subtotal">Rp 0</span>
+      </div>
+      
+      <div class="receipt-tax">
+        <span>Pajak (10%):</span>
+        <span id="receipt-tax">Rp 0</span>
+      </div>
+      
+      <div class="receipt-total">
+        <span>Total:</span>
+        <span id="receipt-total">Rp 0</span>
+      </div>
+      
+      <div class="receipt-barcode">
+        <canvas id="receipt-barcode-canvas"></canvas>
+        <p id="receipt-barcode-text">#000000</p>
+      </div>
+      
+      <div class="receipt-footer">
+        <p>Terima kasih atas kunjungan Anda!</p>
+        <p>www.alzzzlenathea-resto.com</p>
+      </div>
+      
+      <button class="print-btn" onclick="window.print()">Cetak Struk</button>
+      <button class="print-btn" onclick="closeReceipt()" style="background: #e94560; margin-top: 10px;">Tutup</button>
+    </div>
+  </div>
+
+  <script>
+    const menuItems = [
+      /* makanan */
+     { name:"Ayam Goreng", price:25000, img:"https://www.dapurkintamani.com/wp-content/uploads/2022/11/resep-ayam-goreng-favorit-keluarga.webp" },
+      { name:"Nasi Goreng", price:20000, img:"https://dcostseafood.id/wp-content/uploads/2023/04/Nasi-Goreng-Spesial.jpg" },
+      { name:"Mie Goreng", price:18000, img:"https://allofresh.id/blog/wp-content/uploads/2023/09/cara-membuat-mie-goreng-4-1-scaled.jpg" },
+      { name:"Sate Ayam", price:30000, img:"https://sultantv.co/wp-content/uploads/2024/08/hq720.jpg" },
+      { name:"Bakso", price:15000, img:"https://cdn.rri.co.id/berita/Bogor/o/1748152396498-istockphoto-1146015549-612x612/f43bdh1u6n9r4x7.jpeg" },
+      { name:"Soto Ayam", price:22000, img:"https://img-global.cpcdn.com/steps/8dfb4fdfa5f7844b/400x400cq80/photo.jpg" },
+      { name:"Gado-Gado", price:18000, img:"https://assets-cloudflare.segari-ops.id/recipes/gado-gado-lsbaguxy4BVZ2.jpg" },
+      { name:"Pizza", price:40000, img:"https://www.tasteofhome.com/wp-content/uploads/2018/01/Homemade-Pizza_EXPS_FT23_376_EC_120123_3.jpg" },
+      { name:"Steak", price:55000, img:"https://static01.nyt.com/images/2023/12/07/multimedia/LH-Flank-steak/nd-cucumber-salad-hwtv-jumbo.jpg" },
+      { name:"Pempek", price:20000, img:"https://lingkar.news/wp-content/uploads/2023/03/Aneka-Resep-Pempek-Makanan-Tradisional-Khas-Palembang.jpg" },
+      { name:"Sop Buntut", price:45000, img:"https://assets.unileversolutions.com/recipes-v2/125214.jpg" },
+      { name:"Rawon", price:30000, img:"https://awsimages.detik.net.id/community/media/visual/2023/03/14/resep-rawon-daging-surabaya.jpeg?w=600&q=90" },
+      { name:"Ayam Bakar", price:27000, img:"https://image.idntimes.com/post/20230809/ins-saver-868477387-b92c30be9bda955e59d280759a6f55b9.jpg" },
+      { name:"Cumi Goreng Tepung", price:40000, img:"https://pict.sindonews.net/dyn/850/pena/news/2021/03/08/185/357390/resep-cumi-goreng-tepung-yang-empuk-krenyes-ghy.jpg" },
+      { name:"Udang Saus Padang", price:42000, img:"https://asset.kompas.com/crops/Yr3xC6ctJ9b489kpxqjL1VsDtmo=/19x0:678x439/1200x800/data/photo/2021/11/20/619870f8f0761.png" },
+      { name:"Tahu Isi", price:8000, img:"https://i.ytimg.com/vi/ra4pPmFiiXk/maxresdefault.jpg" },
+      { name:"Perkedel", price:10000, img:"https://images.tokopedia.net/img/KRMmCm/2024/2/19/b0be084c-e37b-4f7f-8bf4-e91350bd4ff3.jpg" },
+      { name:"Kerupuk kulit", price:5000, img:"https://id-test-11.slatic.net/p/59989bcdae877193345b4e7ddda610fb.jpg" },
+      { name:"Martabak Telur", price:25000, img:"https://assets.promediateknologi.id/crop/0x0:0x0/750x500/webp/photo/kulinear/2021/06/174795283_384660939222024_8148529217291971600_n.jpg" },
+      { name:"ikan kerapu bakar", price:20000, img:"https://cdn0-production-images-kly.akamaized.net/yeq69ibnDz8zbZ-f6TRsnpwGJJs=/0x33:999x596/1200x675/filters:quality(75):strip_icc():format(jpeg)/kly-media-production/medias/4294511/original/030917800_1674018213-shutterstock_1326431222.jpg" },
+
+      /* Minuman */
+      { name:"Es Teh", price:12000, img:"https://www.estehindonesia.com/images/banner-general.jpg" },
+      { name:"Kopi Hitam", price:10000, img:"https://res.cloudinary.com/dk0z4ums3/image/upload/v1594099345/attached_image/ini-manfaat-konsumsi-kopi-hitam-dan-efek-sampingnya-untuk-kesehatan.jpg" },
+      { name:"Cappuccino", price:15000, img:"https://kopikita.id/wp-content/uploads/2024/10/unnamed-62.jpg" },
+      { name:"Jus Jeruk", price:12000, img:"https://cdn.antaranews.com/cache/1200x800/2018/04/jus.jpg" },
+      { name:"Jus Alpukat", price:15000, img:"https://parto.id/asset/foto_produk/JUS_ALPUKAT_jpg_170912515984.jpg" },
+      { name:"Milkshake Coklat", price:18000, img:"https://cdn.rri.co.id/berita/Singaraja/o/1726153494197-3E5C770B-6FBB-43E3-8479-011D9D06E551/7clwsy1arhebgr6.jpeg" },
+      { name:"Teh Tarik", price:10000, img:"https://asset.kompas.com/crops/hsrnlGnJjSvQmAEyoV_dmwBbUi4=/120x80:1000x667/1200x800/data/photo/2023/10/18/652fcf5eb1b28.jpg" },
+      { name:"Air Mineral", price:5000, img:"https://mutiaragemilang.id/wp-content/uploads/2025/04/Aquaviva.webp" },
+      { name:"Es Kopi Susu", price:15000, img:"https://jogjavoice.com/wp-content/uploads/2025/04/kopi-susu-ultra-milk.jpeg" },
+      { name:"Es Kelapa", price:10000, img:"https://assets.pasundanekspres.co/main/2023/08/Untitled-120.png" },
+      { name:"Wedang Jahe", price:12000, img:"https://www.masakapahariini.com/wp-content/uploads/2018/12/shutterstock_338815997.jpg" },
+      { name:"Bandrek", price:12000, img:"https://asset.kompas.com/crops/8XZuVynCcCuiHwPX2ezUTCde7KI=/0x0:1000x667/1200x800/data/photo/2021/06/20/60cef105d4c03.jpg" },
+      { name:"Bajigur", price:12000, img:"https://asset.kompas.com/crops/Q8gAMW15GUuW65hkosrxWwThn2M=/111x83:735x499/1200x800/data/photo/2020/03/28/5e7eb826a19c9.jpg" },
+      { name:"Jus Mangga", price:13000, img:"https://radarselatan.bacakoran.co/upload/457b21d4be9c59a1c8caec5917b84271.PNG" },
+      { name:"Es Campur", price:15000, img:"https://upload.wikimedia.org/wikipedia/commons/7/7d/Es_campur_1.jpg" },
+      { name:"Es Teler", price:15000, img:"https://topwisata.info/wp-content/uploads/2021/02/Es2BTeler2BMutiara2B252812529.jpg" },
+      { name:"Cendol Dawet", price:12000, img:"https://asset.kompas.com/crops/K2Tdot5QwpSxq1mswvnJqidtQGg=/0x352:751x853/1200x800/data/photo/2020/07/17/5f11041e59757.jpg" },
+      { name:"Susu Jahe", price:12000, img:"https://www.masakapahariini.com/wp-content/uploads/2018/12/shutterstock_338815997.jpg" }
+    ];
+
+    // state
+    let cart = [];
+    let history = JSON.parse(localStorage.getItem("history")) || [];
+    let paymentHistory = JSON.parse(localStorage.getItem("paymentHistory")) || [];
+    let loggedInUser = null;
+
+    // show all menu (dipanggil saat klik tombol Menu)
+    function showAllMenu() {
+      const menuDetail = document.getElementById("menu-detail");
+      menuDetail.innerHTML = "";
+      const grid = document.createElement("div");
+      grid.className = "menu-grid";
+      menuItems.forEach((item, idx) => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <img src="${item.img}" alt="${item.name}">
+          <h3>${item.name}</h3>
+          <p>Rp ${item.price.toLocaleString()}</p>
+          <button onclick="addToCart(${idx})">Tambah</button>
+        `;
+        grid.appendChild(card);
+      });
+      menuDetail.appendChild(grid);
+    }
+
+    // cart functions
+    function addToCart(index) {
+      if (!loggedInUser) {
+        showNotification("Gagal", "Silakan login terlebih dahulu!");
+        return;
+      }
+      const item = menuItems[index];
+      const found = cart.find(c => c.name === item.name);
+      if (found) {
+        found.qty += 1;
+      } else {
+        cart.push({ name: item.name, price: item.price, qty: 1 });
+      }
+      displayCart();
+      showNotification("Berhasil", `${item.name} telah ditambahkan ke keranjang`);
+    }
+
+    function displayCart() {
+      const cartContent = document.getElementById("cart-content");
+      cartContent.innerHTML = "";
+      let subtotal = 0;
+      
+      if (cart.length === 0) {
+        cartContent.innerHTML = "<p>Keranjang Anda kosong. Silakan tambahkan menu dari halaman Menu.</p>";
+        return;
+      }
+      
+      const cartGrid = document.createElement("div");
+      cartGrid.className = "menu-grid";
+      
+      cart.forEach((it, i) => {
+        subtotal += it.price * it.qty;
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <h3>${it.name}</h3>
+          <p>Rp ${it.price.toLocaleString()} x ${it.qty}</p>
+          <p>Total: Rp ${(it.price * it.qty).toLocaleString()}</p>
+          <div>
+            <button class="qty-btn" onclick="changeQty(${i}, -1)">-</button>
+            <button class="qty-btn" onclick="changeQty(${i}, 1)">+</button>
+          </div>
+        `;
+        cartGrid.appendChild(card);
+      });
+      
+      cartContent.appendChild(cartGrid);
+      
+      // Calculate tax and total
+      const tax = subtotal * 0.1;
+      const total = subtotal + tax;
+      
+      const totalDiv = document.createElement("div");
+      totalDiv.className = "cart-summary";
+      totalDiv.innerHTML = `
+        <h3>Ringkasan Keranjang</h3>
+        <div class="subtotal-row">
+          <span>Subtotal:</span>
+          <span>Rp ${subtotal.toLocaleString()}</span>
+        </div>
+        <div class="tax-row">
+          <span>Pajak (10%):</span>
+          <span>Rp ${tax.toLocaleString()}</span>
+        </div>
+        <div class="total-row">
+          <span>Total Keseluruhan:</span>
+          <span>Rp ${total.toLocaleString()}</span>
+        </div>
+        <button class="pay-btn" onclick="showSection('cashier')">Lanjut ke Pembayaran</button>
+      `;
+      cartContent.appendChild(totalDiv);
+    }
+
+    function changeQty(i, delta) {
+      if (!cart[i]) return;
+      cart[i].qty += delta;
+      if (cart[i].qty <= 0) cart.splice(i, 1);
+      displayCart();
+    }
+
+    // cashier functions
+    function displayCashier() {
+      const cashierItems = document.getElementById("cashier-items");
+      const cashierTotal = document.getElementById("cashier-total-amount");
+      
+      cashierItems.innerHTML = "";
+      let subtotal = 0;
+      
+      if (cart.length === 0) {
+        document.getElementById("cashier-empty").style.display = "block";
+        document.getElementById("cashier-main").style.display = "none";
+        document.getElementById("cashier-success").style.display = "none";
+        return;
+      }
+      
+      document.getElementById("cashier-empty").style.display = "none";
+      document.getElementById("cashier-main").style.display = "block";
+      document.getElementById("cashier-success").style.display = "none";
+      
+      // Clear any selected payment method
+      document.querySelectorAll('.payment-method').forEach(el => {
+        el.classList.remove('selected');
+      });
+      document.getElementById('cashier-payment-method').value = '';
+      
+      cart.forEach((it, i) => {
+        subtotal += it.price * it.qty;
+        const row = document.createElement("div");
+        row.className = "cart-item-row";
+        row.innerHTML = `
+          <div class="cart-item-name">${it.name} - Rp ${it.price.toLocaleString()} x ${it.qty}</div>
+          <div>Rp ${(it.price * it.qty).toLocaleString()}</div>
+        `;
+        cashierItems.appendChild(row);
+      });
+      
+      // Calculate tax and total
+      const tax = subtotal * 0.1;
+      const total = subtotal + tax;
+      
+      // Update cashier display with tax breakdown
+      cashierItems.innerHTML += `
+        <div class="cart-item-row" style="margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 10px;">
+          <div class="cart-item-name">Subtotal</div>
+          <div>Rp ${subtotal.toLocaleString()}</div>
+        </div>
+        <div class="cart-item-row">
+          <div class="cart-item-name">Pajak (10%)</div>
+          <div>Rp ${tax.toLocaleString()}</div>
+        </div>
+        <div class="cart-item-row" style="font-weight: bold; font-size: 18px; color: #e94560;">
+          <div class="cart-item-name">Total</div>
+          <div>Rp ${total.toLocaleString()}</div>
+        </div>
+      `;
+      
+      cashierTotal.textContent = `${total.toLocaleString()}`;
+    }
+    
+    // Payment method selection
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.payment-method').forEach(el => {
+        el.addEventListener('click', function() {
+          // Remove selected class from all
+          document.querySelectorAll('.payment-method').forEach(el => {
+            el.classList.remove('selected');
+          });
+          
+          // Add selected class to clicked element
+          this.classList.add('selected');
+          
+          // Set hidden input value
+          document.getElementById('cashier-payment-method').value = this.dataset.method;
+        });
+      });
+    });
+    
+    function processCashierPayment() {
+      const paymentMethod = document.getElementById('cashier-payment-method').value;
+      
+      if (!paymentMethod) {
+        showNotification("Gagal", "Silakan pilih metode pembayaran!");
+        return;
+      }
+      
+      if (cart.length === 0) {
+        showNotification("Gagal", "Keranjang masih kosong!");
+        return;
+      }
+      
+      let subtotal = cart.reduce((s, it) => s + (it.price * it.qty), 0);
+      let tax = subtotal * 0.1;
+      let total = subtotal + tax;
+
+      const youtubers = [
+        "MiawAug", "Windah Basudara", "Poconggg", "Frost Diamond", "Kelvin Gaming",
+        "Jess No Limit", "RRQ Lemon", "Jonathan Liandi", "Reza Arap", "Luthfi Halimawan",
+        "Teguh Sugianto", "Sarah Viloid", "Bang Alex", "Jelool", "Rendy Rangers", "usmangaming" , "prabowo"
+      ];
+      const buyer = youtubers[Math.floor(Math.random() * youtubers.length)];
+
+      const savedItems = cart.map(c => ({ name: c.name, price: c.price, qty: c.qty }));
+      history.push({ buyer, items: savedItems, subtotal, tax, total });
+      paymentHistory.push({ total, method: paymentMethod, date: new Date().toLocaleString() });
+
+      localStorage.setItem("history", JSON.stringify(history));
+      localStorage.setItem("paymentHistory", JSON.stringify(paymentHistory));
+      
+      // Generate receipt
+      generateReceipt(savedItems, subtotal, tax, total, paymentMethod);
+      
+      // Show success animation
+      document.getElementById("cashier-main").style.display = "none";
+      document.getElementById("cashier-success").style.display = "block";
+      
+      // Show notification
+      showNotification("Pembayaran Berhasil", `Pembayaran sebesar Rp ${total.toLocaleString()} dengan metode ${paymentMethod} telah berhasil`);
+      
+      // Clear cart after successful payment
+      cart = [];
+      
+      // Update displays
+      displayCart();
+      displayHistory();
+      displayPaymentHistory();
+    }
+    
+    function generateReceipt(items, subtotal, tax, total, paymentMethod) {
+      // Generate order ID
+      const orderId = Math.floor(100000 + Math.random() * 900000);
+      const orderIdStr = `#${orderId}`;
+      
+      // Set receipt details
+      document.getElementById('receipt-order-id').textContent = orderIdStr;
+      document.getElementById('receipt-date').textContent = new Date().toLocaleString();
+      document.getElementById('receipt-cashier').textContent = loggedInUser || 'Kasir';
+      document.getElementById('receipt-method').textContent = paymentMethod;
+      
+      // Set receipt items
+      const itemsList = document.getElementById('receipt-items-list');
+      itemsList.innerHTML = '';
+      
+      items.forEach(item => {
+        const itemRow = document.createElement('div');
+        itemRow.className = 'receipt-item';
+        itemRow.innerHTML = `
+          <span>${item.name} x ${item.qty}</span>
+          <span>Rp ${(item.price * item.qty).toLocaleString()}</span>
+        `;
+        itemsList.appendChild(itemRow);
+      });
+      
+      // Set receipt totals
+      document.getElementById('receipt-subtotal').textContent = `Rp ${subtotal.toLocaleString()}`;
+      document.getElementById('receipt-tax').textContent = `Rp ${tax.toLocaleString()}`;
+      document.getElementById('receipt-total').textContent = `Rp ${total.toLocaleString()}`;
+      
+      // Generate barcode
+      const barcodeCanvas = document.getElementById('receipt-barcode-canvas');
+      JsBarcode(barcodeCanvas, orderIdStr, {
+        format: "CODE128",
+        width: 2,
+        height: 80,
+        displayValue: false
+      });
+      
+      document.getElementById('receipt-barcode-text').textContent = orderIdStr;
+      
+      // Show receipt modal
+      document.getElementById('receiptModal').style.display = 'flex';
+    }
+    
+    function closeReceipt() {
+      document.getElementById('receiptModal').style.display = 'none';
+    }
+
+    // history functions
+    function displayHistory() {
+      const historyContent = document.getElementById("history-content");
+      historyContent.innerHTML = "";
+      
+      if (history.length === 0) {
+        historyContent.innerHTML = "<p>Belum ada history pembeli.</p>";
+        return;
+      }
+      
+      history.forEach((h, i) => {
+        const historyItem = document.createElement("div");
+        historyItem.className = "history-item";
+        
+        const itemsTags = h.items.map(item => 
+          `<span class="history-item-tag">${item.name}(${item.qty})</span>`
+        ).join('');
+        
+        historyItem.innerHTML = `
+          <div class="history-item-header">
+            <span class="history-buyer">${h.buyer}</span>
+            <span class="history-total">Rp ${h.total.toLocaleString()}</span>
+          </div>
+          <div class="history-items">
+            ${itemsTags}
+          </div>
+        `;
+        
+        historyContent.appendChild(historyItem);
+      });
+    }
+
+    function displayPaymentHistory() {
+      const paymentContent = document.getElementById("payment-content");
+      paymentContent.innerHTML = "";
+      
+      if (paymentHistory.length === 0) {
+        paymentContent.innerHTML = "<p>Belum ada history pembayaran.</p>";
+        return;
+      }
+      
+      paymentHistory.forEach((p, i) => {
+        const paymentItem = document.createElement("div");
+        paymentItem.className = "payment-history-item";
+        
+        paymentItem.innerHTML = `
+          <div class="payment-history-header">
+            <span class="payment-method-badge">${p.method}</span>
+            <span>Rp ${p.total.toLocaleString()}</span>
+          </div>
+          <div>${p.date}</div>
+        `;
+        
+        paymentContent.appendChild(paymentItem);
+      });
+    }
+
+    // section navigation
+    function showSection(section) {
+      // Hide all sections
+      document.querySelectorAll('.content-section').forEach(el => {
+        el.classList.remove('active');
+      });
+      
+      // Show selected section
+      document.getElementById(`${section}-section`).classList.add('active');
+      
+      // Update content based on section
+      switch(section) {
+        case 'menu':
+          showAllMenu();
+          break;
+        case 'cart':
+          displayCart();
+          break;
+        case 'cashier':
+          displayCashier();
+          break;
+        case 'history':
+          displayHistory();
+          break;
+        case 'payment':
+          displayPaymentHistory();
+          break;
+        case 'address':
+          // Address content is static, no need to update
+          break;
+      }
+    }
+
+    // notification
+    function showNotification(title, message) {
+      const notification = document.getElementById('notification');
+      const notificationTitle = notification.querySelector('.notification-title');
+      const notificationMessage = notification.querySelector('.notification-message');
+      
+      notificationTitle.textContent = title;
+      notificationMessage.textContent = message;
+      
+      notification.classList.add('show');
+      
+      // Auto hide after 3 seconds
+      setTimeout(() => {
+        hideNotification();
+      }, 3000);
+    }
+    
+    function hideNotification() {
+      const notification = document.getElementById('notification');
+      notification.classList.remove('show');
+    }
+
+    // login
+    function login() {
+      const user = document.getElementById("username").value;
+      const pass = document.getElementById("password").value;
+      if ((user === "alibaba" && pass === "123") || (user === "pembeli" && pass === "123")) {
+        loggedInUser = user;
+        document.getElementById("loginScreen").style.display = "none";
+        document.getElementById("welcome").innerHTML = `<div class="welcome-message">✨ Selamat datang di Alzzzlenathea Resto, ${user}! Selamat menikmati hidangan favorit & terima kasih sudah berkunjung. 🍽️</div>`;
+        showNotification("Login Berhasil", `Selamat datang, ${user}!`);
+      } else {
+        showNotification("Login Gagal", "Username atau password salah!");
+      }
+    }
+
+    // tampilkan daftar menu secara default saat halaman dibuka
+    showAllMenu();
+  </script>
+</body>
+</html>
